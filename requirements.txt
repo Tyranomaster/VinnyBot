@@ -1,0 +1,6 @@
+#pip requirements
+markovify
+lxml
+discord.py
+praw
+

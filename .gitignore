@@ -1,0 +1,9 @@
+#python garbage
+__pycache__/
+.pyc
+
+#config files
+config/
+logs/
+.idea
+

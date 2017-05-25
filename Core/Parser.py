@@ -5,6 +5,7 @@ import urllib.request
 import discord
 from Reddit import *
 from help import *
+from Config import *
 from Moderation import *
 from VoiceCore import *
 from Giphy import *
@@ -24,6 +25,8 @@ async def parseCommand(message, client):
 
         #Find which command has been given
         if message.content.startswith('~'):
+            if message.author.bot:
+                return
             if message.content.startswith('~test'):
                 counter = 0
                 tmp = await client.send_message(message.channel, 'Calculating messages...')
@@ -34,7 +37,7 @@ async def parseCommand(message, client):
                 await client.edit_message(tmp, message.author.name + ', you have {} messages.'.format(counter))
 
             elif message.content.startswith('~help'):
-                await help(client, message)
+                await help(message, client)
                 commandCalled()
                 logCommand(message, client, '~help')
 
@@ -325,9 +328,12 @@ async def parseCommand(message, client):
                 commandCalled()
                 logCommand(message, client, '~whosaid')
 
+
     else:
         if message.content.startswith('~help'):
-            await help(client, message)
+            await help(message, client)
             commandCalled()
+        elif message.author.bot:
+            return
         else:
             await client.send_message(message.channel, "Quit trying to slide into my DMs I only do ~help inside of DMs")
