@@ -8,6 +8,7 @@ from Stats import *
 from nsfw import *
 from Logger import *
 from Config import *
+from playing import *
 
 import sys
 
@@ -277,6 +278,14 @@ async def parseCommand(message, client):
         elif message.content.startswith('~ryzen'):
             await generateRyzen(message, client)
             logCommand(message, client, '~ryzen')
+
+        elif message.content.startswith('~games'):
+            await games(message, client)
+            logCommand(message, client, '~games')
+
+        elif message.content.startswith('~battle'):
+            await battle(message, client)
+            logCommand(message, client, '~battle')
 
 
     # else:

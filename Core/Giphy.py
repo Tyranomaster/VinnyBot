@@ -1,6 +1,7 @@
 import json
 import urllib
 import urllib.request
+from pyfiglet import Figlet
 
 async def harambe(message, client):
     data = json.loads(urllib.request.urlopen("http://api.giphy.com/v1/gifs/random?tag=silverback+gorilla&api_key=dc6zaTOxFJmzC").read().decode('utf-8'))
@@ -20,16 +21,16 @@ async def giphy(message, client):
         except UnicodeEncodeError:
             await message.channel.send("Error attempting to send giphy search. (Does the search have wierd characters or formatting?)")
 
-# Opens the page of some guy's heroku app using user input
+# Utilizes pyfiglet to create ascii-ified text pyfiglet credit goes to pwaller on github
 # Credit: mrb25
 async def ascii(message, client):
     try:
-        text = message.content[7:].replace(' ', '+')
-        with urllib.request.urlopen('https://artii.herokuapp.com/make?text=' + text) as response:
-            html = response.read()
-            encoding = response.headers.get_content_charset('utf-8')
-            html_text = html.decode(encoding)
-            html_text = "```" + html_text + "```"  # Adds block quotes around the ascii text for cleanliness
-            await message.channel.send(html_text)
+        f = Figlet()
+        toreturn = f.renderText((message.clean_content[7:]))
+        if toreturn.strip() is "":  # So that it doesn't just return "``````"
+            await message.channel.send(":x: Error getting ascii. This message is either empty or contains only unicode. :x:")
+        else:
+            toreturn = "```" + toreturn + "```"
+            await message.channel.send(toreturn)
     except:
-        await message.channel.send(':x: Error getting ascii. The message is probably too long :x:')
+        await message.channel.send(":x: Error getting ascii. The message is probably too long :x:")

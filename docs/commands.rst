@@ -1,8 +1,10 @@
+.. List of all Vinny Commands. Created by mrb25 on 11/15
+
 Vinny Commands
 ================
 
 Meme Commands
--------------------------------
+---------------------------------------------------------------------
 *Nice meme*
 
 * ~shit -- Posts a random shitpost
@@ -20,6 +22,9 @@ Meme Commands
 * ~giphy *search terms* -- Searches giphy for a gif or webm matching your search
 * ~8ball -- Get a response from the magic 8 ball
 * ~roll *range* -- Gives a random number from 0 - range (default 10)
+* ~battle *member* *optional other member* -- have a quick skirimsh against another member of the server
+
+:ref:`Meme_Examples`
 
 Reddit Commands
 -------------------------------
@@ -30,12 +35,17 @@ Reddit Commands
 * ~cosplay *search_terms* -- Searches for a cosplay meeting the search terms.
 * ~cosplaygirls *search_terms* -- Searches for a girl cosplay using the search terms
 
+:ref:`Reddit_Examples`
+
 Comment Commands
 ---------------------------------------
 *Pretend to be someone else*
 
 * ~comment @user or #channel -- Generates a unique comment based on the user/channel post history (Experimental)
 * ~ryzen -- Hey did you hear about Ryzen?
+* ~games -- gives a list of games being played by server members right now. In order of most to least played.
+
+:ref:`Comment_Examples`
 
 Moderation Commands
 ----------------------------------------
@@ -46,6 +56,7 @@ Moderation Commands
 * ~whois @username -- Gives info about a user
 * ~whohas @role -- Gives list of all users with this role
 
+:ref:`Moderation_Examples`
 
 Voice Commands
 ------------------------------------
@@ -71,6 +82,8 @@ NSFW Commands
 * ~nsfw -- Tells whether or not nsfw is enabled on a given channel
 * ~r34 *search_terms* -- Rule 34 (Multi word tags use _)
 
+:ref:`NSFW_Examples`
+
 Vinny Commands
 ----------------------------------
 *beep boop*
@@ -79,3 +92,5 @@ Vinny Commands
 * ~info -- Gives info about Vinny
 * ~invite -- Gives the link to invite Vinny to a server
 * ~help -- Gives a command list
+
+:ref:`Vinny_Examples`
