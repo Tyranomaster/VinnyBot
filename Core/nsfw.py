@@ -1,6 +1,6 @@
 import urllib.request
 import os
-from random import randint
+from random import randint, random, choice
 from pixivpy3 import *
 import xml.etree.ElementTree
 
@@ -23,9 +23,17 @@ async def postR34(message, client):
             search = "http://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=200&tags={}".format(tags)
 
         try:
+            if " natsuki" in str.lower(tags) or " sayori" in str.lower(tags) or " yuri" in str.lower(tags) or " monika" in str.lower(tags) or "ddlc" in str.lower(tags) or "doki_doki" in str.lower(tags):
+                dokiLines = ['Do you have no self respect?', 'pls no bulli', 'I\'m telling Monika', 'FUCKING MONIKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                             'You meanie', 'Just leave the poor girls alone!', 'Natsuki can be a decent human being,\nYuri can be a decent human being,\nMonika can be a decent human being,\nSayori can be a decent human being,\nYou can try,\nBut that\'s about it',
+                             "You know what??? FINE!!!!\nhttps://78.media.tumblr.com/f6c24ca6299673f41390ed1b1c86d98b/tumblr_p0r4l2MnFy1vzgut2o1_1280.jpg", "https://i.imgur.com/hQ9dbqB.png", "https://imgur.com/a/ikliW"]
+                await message.channel.send(choice(dokiLines) + " :disappointed:")
+                return
+
             xmlFile = urllib.request.urlopen(search)
-        except:
+        except Exception as e:
             await message.channel.send("There was an error retrieving a post... :confounded: ")
+            print(e)
             return
         e = xml.etree.ElementTree.parse(xmlFile)
         root = e.getroot()
