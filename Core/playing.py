@@ -55,7 +55,7 @@ async def battle(message, client):
     weapons = ["dagger :dagger:", "bow :bow_and_arrow:", "sword :crossed_swords:", "wits :thinking:"]
     user1_weapon = weapons[randint(0, 3)]
     user2_weapon = weapons[randint(0, 3)]
-    await message.channel.send(user1_name + " weilds their " + user1_weapon + ", while " + user2_name +
+    await message.channel.send(user1_name + " wields their " + user1_weapon + ", while " + user2_name +
                                " takes in their trusty " + user2_weapon + ".")
 
     # initialize health and starting attacker (random)
