@@ -17,7 +17,7 @@ async def on_ready():
     print(client.user.id)
     print('------\n')
     await client.change_presence(game=discord.Game(name='~help for command list'))
-    with open('res/Vinny03.jpg', 'rb') as fp:
+    with open('res/vinny.jpg', 'rb') as fp:
         await client.user.edit(avatar=fp.read())
     initNsfw()
     initReddit()
