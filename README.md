@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/JessWalters/VinnyBot.svg?branch=master)](https://travis-ci.org/bwmarrin/discordgo)
 [![Documentation Status](https://readthedocs.org/projects/vinnybot/badge/?version=latest)](http://vinnybot.readthedocs.io/en/latest/?badge=latest)
 
-A side project I have been working on for about 5 months now. In these 5 months Vinny has accumulated over 153,000 users across over 7,000 servers. The codebase is currently undergoing a major redesign and refactor. This is to increase readability for other devs and maintainability. This started as a small hackathon project and the core was not written for a bot of this scale. 
+A side project I have been working on for about 5 months now. In these 5 months Vinny has accumulated over 200,000 users across over 7,000 servers. The codebase is currently undergoing a major redesign and refactor. This is to increase readability for other devs and maintainability. This started as a small hackathon project and the core was not written for a bot of this scale. 
 
 ## Usage
 ### To add Vinny to your own server go to: https://goo.gl/g1vWxS  
