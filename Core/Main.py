@@ -1,14 +1,13 @@
-import threading
-import discord
-import sys
+from Config import getToken
+from Config import initConfig
 from Parser import *
-from VoiceCore import *
-from Logger import *
-from Config import *
+from nsfw import initNsfw
+from Reddit import initReddit
+
 
 initConfig()
 Token = getToken('Discord')
-client = discord.Client()
+client = discord.AutoShardedClient()
 
 
 @client.event
@@ -18,8 +17,12 @@ async def on_ready():
     print(client.user.id)
     print('------\n')
     await client.change_presence(game=discord.Game(name='~help for command list'))
-    initCommandCount()
+    with open('res/vinny.jpg', 'rb') as fp:
+        await client.user.edit(avatar=fp.read())
+    initNsfw()
+    initReddit()
     sendStatistics(client)
+
 
 
 @client.event

@@ -20,10 +20,10 @@ async def info(message, client):
     info.add_field(name="About Vinny", value=ABOUT_VINNY)
     info.add_field(name="Vinny Server", value=VINNY_SERVER)
     info.add_field(name="Invite Vinny", value=VINNY_INVITE)
-    await client.send_message(message.channel, embed=info)
+    await message.channel.send(embed=info)
 
 async def invite(message, client):
-    await client.send_message(message.channel, VINNY_INVITE)
+    await message.channel.send(VINNY_INVITE)
 
 
 

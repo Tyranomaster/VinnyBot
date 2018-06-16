@@ -13,21 +13,26 @@
 ~ayy -- Lmao
 ~giphy *search terms* -- Searches giphy for a gif or webm matching your search
 ~8ball -- Get a response from the magic 8 ball
+~roll *range* -- Gives a random number from 0 - range (default 10)
+~ascii *text* -- Returns a more obnoxious version of the input text in ascii art
+~battle *member* (optional member) -- Have a quick skirmish against someone else
 
 ***REDDIT COMMANDS***
 ~rr *subreddit* -- Gives random HOT post from given subreddit
-~tr *subreddit* -- Top HOT post from subreddit right now
+~tr *subreddit* -- Gives random top of all time post from subreddit
 ~cosplay *search_terms* -- Searches for a cosplay meeting the search terms.
 ~cosplaygirls *search_terms* -- Searches for a girl cosplay using the search terms
 
 ***COMMENT COMMANDS***
 ~comment @user or #channel -- Generates a unique comment based on the user/channel post history (Experimental)
 ~ryzen -- Hey did you hear about Ryzen?
+~games -- Generates a list of the games that are being played by everyone in the server.
 
 ***MODERATION COMMANDS***
 ~prune @user \"example\" *num* -- Removes the messages from the last *num* messages from user containing \"example\". Mentioning users and defining text are both optional and can be used for as many users or phrases as needed in a single prune command.
 ~kick @username -- Kicks all mentioned users
 ~whois @username -- Gives info about a user
+~whohas @role -- Gives list of all users with this role
 
 
 ***VOICE COMMANDS***
@@ -40,6 +45,7 @@
 ~stop -- If an audio stream is playing in your server it stops it
 ~pause -- Pauses current audio stream
 ~resume -- Resumes audio stream when paused
+~volume -- Set voice volume (Between 0 and 150)
 ~voicestats -- Gives info about current audio streams
 
 ***NSFW COMMANDS***

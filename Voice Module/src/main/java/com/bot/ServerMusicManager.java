@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 /**
  * Created by Jess on 3/28/2017.
  */
+
 public class ServerMusicManager {
 
     public final AudioPlayer player;

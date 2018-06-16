@@ -1,0 +1,8 @@
+notifications:
+  email: false
+
+language: java
+
+script:
+  - cd Voice\ Module/
+  - mvn verify

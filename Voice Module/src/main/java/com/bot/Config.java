@@ -8,6 +8,7 @@ import java.util.Scanner;
 /**
  * Created by Jess on 3/28/2017.
  */
+
 public class Config {
 
     private final File tokenFile;

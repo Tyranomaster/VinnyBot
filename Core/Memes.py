@@ -7,7 +7,7 @@ answers = ["It is certain", "It is decidedly so", "Without a doubt", "Yes defini
 
 
 async def kappa(message, client):
-    await client.send_message(message.channel, """░░░░░░░░░
+    await message.channel.send("""░░░░░░░░░
     ░░░░▄▀▀▀▀▀█▀▄▄▄▄░░░░
     ░░▄▀▒▓▒▓▓▒▓▒▒▓▒▓▀▄░░
     ▄▀▒▒▓▒▓▒▒▓▒▓▒▓▓▒▒▓█░
@@ -24,7 +24,7 @@ async def kappa(message, client):
     ░░░░░░░░▀▀█▄▄▄▄▀""")
 
 async def ayy(message, client):
-    await client.send_message(message.channel, """░░░░█▒▒▄▀▀▀▀▀▄▄▒▒▒▒▒▒▒▒▒▄▄▀▀▀▀▀▀▄
+    await message.channel.send("""░░░░█▒▒▄▀▀▀▀▀▄▄▒▒▒▒▒▒▒▒▒▄▄▀▀▀▀▀▀▄
     ░░▄▀▒▒▒▄█████▄▒█▒▒▒▒▒▒▒█▒▄█████▄▒█
     ░█▒▒▒▒▐██▄████▌▒█▒▒▒▒▒█▒▐██▄████▌▒█
     ▀▒▒▒▒▒▒▀█████▀▒▒█▒░▄▒▄█▒▒▀█████▀▒▒▒█
@@ -42,7 +42,7 @@ async def ayy(message, client):
     ▀░░░▀░░▀░░░░▀░░░░▀▀▀░░░░░░░░░▀░░░▀░▀▄▄▄▀﻿""")
 
 async def lenny(message, client):
-    await client.send_message(message.channel, """───█───▄▀█▀▀█▀▄▄───▐█──────▄▀█▀▀█▀▄▄
+    await message.channel.send("""───█───▄▀█▀▀█▀▄▄───▐█──────▄▀█▀▀█▀▄▄
 ──█───▀─▐▌──▐▌─▀▀──▐█─────▀─▐▌──▐▌─█▀
 ─▐▌──────▀▄▄▀──────▐█▄▄──────▀▄▄▀──▐▌
 ─█────────────────────▀█────────────█
@@ -54,7 +54,7 @@ async def lenny(message, client):
 ───█───────────▀▄▄▄▄▄▄▄▄▄▀────────█""")
 
 async def banHammer(message, client):
-    await client.send_message(message.channel, """░░░░░░░░░░░░
+    await message.channel.send("""░░░░░░░░░░░░
  ▄████▄░░░░░░░░░░░░░░░░░░░░
 ██████▄░░░░░░▄▄▄░░░░░░░░░░
 ░███▀▀▀▄▄▄▀▀▀░░░░░░░░░░░░░
@@ -64,7 +64,7 @@ async def banHammer(message, client):
 ░░░░░▀▀▀▀░░░░░░░░░░░░░░░░░""")
 
 async def doggo(message, client):
-    await client.send_message(message.channel, """---------------------------
+    await message.channel.send("""---------------------------
 
 ┈┈┈┈╱▏┈┈┈┈┈╱▔▔▔▔╲┈┈┈┈┈
 ┈┈┈┈▏▏┈┈┈┈┈▏╲▕▋▕▋▏┈┈┈┈
@@ -76,7 +76,7 @@ async def doggo(message, client):
 ┈┈┈┈┈┈┈┈┈┈┈┈┈╲╱╲╱┈┈┈┈┈""")
 
 async def hitler(message, client):
-    await client.send_message(message.channel, """░░░░░░░░░░░░░░░░░░
+    await message.channel.send("""░░░░░░░░░░░░░░░░░░
 ░░░░▓▓▀▀██████▓▄▒▒░░░
 ░░░▀░░░░░░▀▀▀████▄▒░░░
 ░░▌░░░░░░░░░░░▀███▓▒░░
@@ -92,7 +92,7 @@ async def hitler(message, client):
 ░░░▀██████▓▒▒▒▒▒░▐░""")
 
 async def mario(message, client):
-    await client.send_message(message.channel, """▒▒▒▒▒▒▒▒▒▄▄▄▄▒▄▄▄▒▒▒
+    await message.channel.send("""▒▒▒▒▒▒▒▒▒▄▄▄▄▒▄▄▄▒▒▒
 ▒▒▒▒▒▒▄▀▀▓▓▓▀█░░░█▒▒
 ▒▒▒▒▄▀▓▓▄██████▄░█▒▒
 ▒▒▒▄█▄█▀░░▄░▄░█▀▀▄▒▒
@@ -108,7 +108,7 @@ async def mario(message, client):
 ▒▒▒▀▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒""")
 
 async def megaMan(message, client):
-    await client.send_message(message.channel, """░░░░░░░░░░▄▄█▀▀▄░░░░
+    await message.channel.send("""░░░░░░░░░░▄▄█▀▀▄░░░░
 ░░░░░░░░▄█████▄▄█▄░░░░
 ░░░░░▄▄▄▀██████▄▄██░░░░
 ░░▄██░░█░█▀░░▄▄▀█░█░░░▄▄▄▄
@@ -121,7 +121,7 @@ async def megaMan(message, client):
 ░░░░░░░░░█████████░░░░""")
 
 async def salt(message, client):
-    await client.send_message(message.channel, """▒▒▒▒▒▒▄▄██████▄
+    await message.channel.send("""▒▒▒▒▒▒▄▄██████▄
 ▒▒▒▒▒▒▒▒▒▒▄▄████████████▄
 ▒▒▒▒▒▒▄▄██████████████████
 ▒▒▒▄████▀▀▀██▀██▌███▀▀▀████
@@ -137,7 +137,7 @@ async def salt(message, client):
 """)
 
 async def pikachu(message, client):
-    await client.send_message(message.channel, """░░░░█░▀▄░░░░░░░░░░▄▄███▀
+    await message.channel.send("""░░░░█░▀▄░░░░░░░░░░▄▄███▀
 ░░░░█░░░▀▄░▄▄▄▄▄░▄▀░░░█▀
 ░░░░░▀▄░░░▀░░░░░▀░░░▄▀
 ░░░░░░░▌░▄▄░░░▄▄░▐▀▀
@@ -149,7 +149,7 @@ async def pikachu(message, client):
 """)
 
 async def feels(message, client):
-    await client.send_message(message.channel, """───────▄▀▀▀▀▀▀▀▀▀▀▄▄
+    await message.channel.send("""───────▄▀▀▀▀▀▀▀▀▀▀▄▄
 ────▄▀▀░░░░░░░░░░░░░▀▄
 ──▄▀░░░░░░░░░░░░░░░░░░▀▄
 ──█░░░░░░░░░░░░░░░░░░░░░▀▄
@@ -172,4 +172,22 @@ async def feels(message, client):
 ▀░░░▄▀░░░░░░░░░░▀░░░▀▀▀▀▄▄▄▄▄""")
 
 async def magic8ball(message, client):
-    await client.send_message(message.channel, "The magic 8 ball says: " + random.choice(answers))
+    await message.channel.send("The magic 8 ball says: " + random.choice(answers))
+
+async def roll(message, client):
+    params = message.content.split(' ')
+    params.pop(0)
+    if len(params) == 0:
+        await message.channel.send("Rolled: " + str(random.choice(range(0, 10))))
+        return
+    try:
+        for param in params:
+            num = int(param)
+            if num < 2:
+                await message.channel.send("Please enter a number >= 2")
+            elif num > 1000000000:
+                await message.channel.send("I can only roll up to 1,000,000,000")
+            else:
+                await message.channel.send("Rolled: " + str(random.choice(range(0, num))))
+    except:
+        await message.channel.send("Invalid input. Please enter only integers")

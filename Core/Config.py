@@ -14,17 +14,17 @@ def initConfig():
 
     with open("config/tokens.txt", "r") as f:
         #Make translation map for removing new lines and *
-        map = str.maketrans('', '', '*\n')
+        transMap = str.maketrans('', '', '*\n')
         for line in f:
             if line.startswith('***'):
-                line = line.translate(map)
-                tokens[line] = next(f).translate(map)
+                line = line.translate(transMap)
+                tokens[line] = next(f).translate(transMap)
 
     with open("config/commands.txt", "r") as f:
-        map = str.maketrans('', '', '*\n')
+        transMap = str.maketrans('', '', '*\n')
         for line in f:
             if line.startswith("***"):
-                name = line.split(' ')[0].lower().translate(map)
+                name = line.split(' ')[0].lower().translate(transMap)
                 commands[name] = {}
                 continue
             if name is not None:
@@ -32,13 +32,19 @@ def initConfig():
                     command = line.split(' ')[0].replace('~', '')
                     commands[name][command] = line
 
-async def help(message, client):
-    if len(message.content.split(" ")) > 1:
-        for i in range(1, len(message.content.split(" "))):
-            lookFor = message.content.split(" ")[i]
-            await client.send_message(message.author, lookFor + ": " + getCommand(lookFor))
-    else:
-        await client.send_message(message.author, embed=defaultHelp(client))
+async def sendhelp(message, client):
+    try:
+        if len(message.content.split(" ")) > 1:
+            for i in range(1, len(message.content.split(" "))):
+                lookFor = message.content.split(" ")[i]
+                await message.author.send(lookFor + ": " + getCommand(lookFor))
+        else:
+            await message.author.send("For more help or to give feedback join Vinny's discord server at:"
+                                      " https://discord.gg/XMwyzxZ", embed=defaultHelp(client))
+    except:
+        await message.channel.send("Error sending the message to your DMs. Posting help in channel.")
+        await message.channel.send("For more help or to give feedback join Vinny's discord server at:"
+                                  " https://discord.gg/XMwyzxZ", embed=defaultHelp(client))
 
 
 def getCommand(command):
@@ -57,11 +63,11 @@ def defaultHelp(client):
     embed.add_field(name="Note", value="In all commands with *search_terms* replace it with what you want to search."
                                        "For a tag that is multiple words use _ instead of spaces.", inline=False)
     for key, value in commands.items():
-        list = ""
+        commandList = ""
         for command, desc in value.items():
-            list += desc
+            commandList += desc
         embed.add_field(name=key.upper() + " COMMANDS",
-                        value=list,
+                        value=commandList,
                         inline=False)
 
     embed.set_author(name=client.user.name, icon_url=client.user.avatar_url)

@@ -1,11 +1,11 @@
 package com.bot;
 
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
+import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,10 +13,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by Jess on 3/28/2017.
  */
+
 public class TrackScheduler extends AudioEventAdapter{
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
     private AudioTrack nowPlaying;
+
+    public static final int MAX_QUEUE_SIZE = 20;
 
     /**
      * @param player The audio player this scheduler uses
@@ -71,6 +74,12 @@ public class TrackScheduler extends AudioEventAdapter{
 
     public void stopPlayer() {
         player.stopTrack();
+
+        //removes all items from queue before disconnecting
+        while (!queue.isEmpty()){
+            queue.poll();
+        }
+        nowPlaying = null;
     }
 
     public boolean isPlaying() {
@@ -93,18 +102,23 @@ public class TrackScheduler extends AudioEventAdapter{
     }
 
     public String removeTrack(int index) {
-        AudioTrack toRemove = null;
-        int j = 0;
-        for (AudioTrack audioTrack : queue) {
-            if (j == index-1) {
-                toRemove = audioTrack;
-                break;
-            }
+        Iterator<AudioTrack> it = queue.iterator();
+        AudioTrack track = it.next();
+        for (int i = 2; i < index; i++) {
+            track = it.next();
         }
-        if (toRemove != null){
-            queue.remove(toRemove);
-            return toRemove.getInfo().title;
-        } else
-            return null;
+        if(track != null){
+            it.remove();
+            return track.getInfo().title;
+        }
+        return null;
+    }
+
+    public int getNumQueuedTracks() {
+        return queue.size();
+    }
+
+    public AudioTrack getNowPlaying() {
+        return nowPlaying;
     }
 }

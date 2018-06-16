@@ -3,9 +3,7 @@ package com.bot;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-/**
- * Created by sable_000 on 4/27/2017.
- */
+
 public class SearchListenerMessage {
 
     private long authorID;

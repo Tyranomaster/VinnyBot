@@ -25,7 +25,9 @@ public class ShardingManager {
                     .buildBlocking();
 
             shards[i].addEventListener(new discordBot());
+            System.out.println("Started shard: " + i);
         }
+        System.out.println("Started all shards");
     }
 
     public static JDA[] getShards() {
