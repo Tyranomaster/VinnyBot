@@ -134,11 +134,27 @@ async def battle(message, client):
     await message.channel.send(winner_name + " defeated " + loser_name + "!")
 
 async def battle_royale(message, client):
-    candidates = None
+    candidates = list()
     # Get contestant list
     # if there are mentions, use them. Otherwise, use all guild members
+    roles = message.guild.roles
+    content = message.content
+    role = None
+    if len(message.content.split(" ")) > 1:
+        role_a = content.split(" ")[1]
+        for role_b in roles:
+            if role_b.mention == role_a:
+                role = role_b
+
+    # add users by mention if here are mentions
     if len(message.mentions) > 0:
         candidates = message.mentions
+    # add users by role if a role was mentioned
+    elif role is not None:
+        for applicant in message.guild.members:
+            if role in applicant.roles:
+                candidates.append(applicant)
+    # add all users
     else:
         candidates = message.guild.members
 
