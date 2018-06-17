@@ -143,24 +143,23 @@ async def battle_royale(message, client):
 
     # Get fighters' nicks and names into a list
     fighters = {}
-    i = 0
-    for candidate in candidates:
-        i += 1
+    for index, candidate in enumerate(candidates):
+        # filter out bots
+        if candidate.bot:
+            continue
         nameo = candidate.nick
         if nameo is None:
             nameo = candidate.name
-        # nameo = str(i) + "(" + nameo + ")"
         # Each player has a dictionary with current hp, mentionable name, and player key to get revenge on.
-        fighters[str(i)] = {}
-        fighters[str(i)]["name"] = nameo
-        fighters[str(i)]["hp"] = 100
-        fighters[str(i)]["mention"] = candidate.mention
-        fighters[str(i)]["revenge"] = None
+        fighters[str(index)] = {}
+        fighters[str(index)]["name"] = nameo
+        fighters[str(index)]["hp"] = 100
+        fighters[str(index)]["mention"] = candidate.mention
+        fighters[str(index)]["revenge"] = None
 
     round_count = 0
+    # As long as there is more than 1 fighter, do another round.
     while len(fighters) > 1:
-        # As long as there is more than 1 fighter, do another round.
-        # TODO - scramble the list
         name_len = 8
         for fighter in fighters:
             if len(fighters[fighter]["name"]) > name_len:
@@ -168,7 +167,12 @@ async def battle_royale(message, client):
         battlerecord = ""
         if round_count is not 0:
             time.sleep(2.5)
-        for attacker in fighters.copy():
+        # get keys
+        rand_fighters = list(fighters.keys())
+        # shuffle keys
+        random.shuffle(rand_fighters)
+        # play with shuffled keys
+        for attacker in rand_fighters.copy():
             if fighters.get(attacker) is None:
                 continue
             defender = None
@@ -210,7 +214,7 @@ async def battle_royale(message, client):
                 fighters[defender]["hp"] -= damage
                 battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len,
                                                                         y=name_len)
-                if fighters[attacker]["hp"] < 1:
+                if fighters[defender]["hp"] < 1:
                     battlerecord += "\tCritical hit! " + fighters[attacker]["name"] + " fucking murders " + fighters[defender]["name"] + "!\n"
                 else:
                     battlerecord += "\tCritical hit!\n"
@@ -268,11 +272,10 @@ async def battle_royale(message, client):
         output += "```"
         await message.channel.send(output)
 
-    win_message_2 = "```\nBehold your champion, {} of {}!\n```"
+    win_message = "```\nBehold your champion, {} of {}!\n```"
     lose_message = "```\nLoser, loser, chicken loser.```"
     if len(fighters) is 0:
         await message.channel.send(lose_message)
     else:
         victor = fighters[random.choice(list(fighters))]["name"]
-        await message.channel.send(win_message_2.format(victor, message.guild.name))
-        # await message.channel.send(win_message.format(fighters[victor]["mention"]))
+        await message.channel.send(win_message.format(victor, message.guild.name))
