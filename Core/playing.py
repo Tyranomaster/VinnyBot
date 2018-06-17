@@ -212,8 +212,7 @@ async def battle_royale(message, client):
             elif roll is 20:
                 damage = roll + 10 + randint(1, 10)
                 fighters[defender]["hp"] -= damage
-                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len,
-                                                                        y=name_len)
+                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
                 if fighters[defender]["hp"] < 1:
                     battlerecord += "\tCritical hit! " + fighters[attacker]["name"] + " fucking murders " + fighters[defender]["name"] + "!\n"
                 else:
