@@ -4,6 +4,7 @@ import time
 import random
 from random import randint
 
+
 async def games(message, client):
     server = message.guild
     members = server.members
@@ -145,8 +146,17 @@ async def battle_royale(message, client, verbose):
         await message.channel.send(":x:It's not a battle royal if you don't have at least 3 fighters:x:")
         return
 
-    await enact_battle(message, fighters, verbose)
     # TODO - alphabatize fighters by name
+
+    # Enact the battle of our lifetimes
+    await enact_battle(message, fighters, verbose)
+
+    # Print victory message, unless the players are feeling suicidal
+    if len(fighters) is 0:
+        await message.channel.send("```\nLoser, loser, chicken loser.\n```")
+    else:
+        victor = fighters[random.choice(list(fighters))]["name"]
+        await message.channel.send("```\nBehold your champion, {} of {}!\n```".format(victor, message.guild.name))
 
     """
     if randint(1,20) is 1:
@@ -189,16 +199,10 @@ async def battle_royale(message, client, verbose):
         else:
             battlerecord += "\n"
     """
-    if len(fighters) is 0:
-        await message.channel.send("```\nLoser, loser, chicken loser.\n```")
-    else:
-        victor = fighters[random.choice(list(fighters))]["name"]
-        await message.channel.send("```\nBehold your champion, {} of {}!\n```".format(victor, message.guild.name))
-
-
 
 
 async def role_mentioned(message):
+    # If there is more than 1 element (the command) in the message, see if it's a role.
     if len(message.content.split(" ")) > 1:
         find_role = message.content.split(" ")[1]
         for role in message.guild.roles:
@@ -244,7 +248,7 @@ async def populate_roster(candidates):
     return fighters
 
 
-async def preform_attack(fighters, attacker, defender, verbose):
+async def enact_attack(fighters, attacker, defender, verbose):
     # Person to take the damage, defender unless there is a critical fail
     target = defender
     # Was this a critical hit?
@@ -260,7 +264,6 @@ async def preform_attack(fighters, attacker, defender, verbose):
         damage += 10
     else:
         critical = False
-    # TODO - uncomment for testing
     # If there are no other defenders, and the attacker didn't hit themself
     if target is None:
         return ""
@@ -285,7 +288,7 @@ async def preform_attack(fighters, attacker, defender, verbose):
     return battle_report
 
 
-async def enact_round(message, fighters, round_count, verbose):
+async def enact_round(fighters, verbose):
     # Text record of what happens during each round
     battle_report = ""
     # Shuffle the fighter attack order
@@ -302,14 +305,15 @@ async def enact_round(message, fighters, round_count, verbose):
             defender = fighters[attacker]["revenge"]
         # if there is no one left to hit, check for suicide
         elif len(fighters) is 1:
+            battle_report += await enact_attack(fighters, attacker, defender, verbose)
             # TODO - commit sepakku
             print("")  # TODO - remove once this is done
         # Otherwise, choose a random opponent
         else:
             while defender is attacker or defender is None:
                 defender = random.choice(list(fighters))
-        #
-        battle_report += await preform_attack(fighters, attacker, defender, verbose)
+        # Enact an attack, and save the battle report for it
+        battle_report += await enact_attack(fighters, attacker, defender, verbose)
     return battle_report
 
 
@@ -321,13 +325,12 @@ async def enact_battle(message, fighters, verbose):
         for fighter in fighters:
             if len(fighters[fighter]["name"]) > name_len:
                 name_len = len(fighters[fighter]["name"])
-        # TODO - change where the delay takes place
-        if round_count is not 0:
-            time.sleep(1.5)
-        battle_report = await enact_round(message, fighters, round_count, verbose)
+        battle_report = await enact_round(fighters, verbose)
         # TODO - comment below here
+        # Split the battle report into an array of each line
         line_by_line = battle_report.split("\n")
         round_count += 1
+        # Print round number, combatant count, and the battle reports
         output = "```\n\tRound  {}:\tCombatants: {}\n".format(round_count, len(fighters))
         if len(line_by_line) is 1 and len(line_by_line[0]) is 0:
             output += "No fatalities.\n"
@@ -338,6 +341,8 @@ async def enact_battle(message, fighters, verbose):
                 output += "```"
                 await message.channel.send(output)
                 output = "```\n" + line + "\n"
+                time.sleep(1)
         output += "```"
         await message.channel.send(output)
+        time.sleep(1)
 
