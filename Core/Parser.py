@@ -284,7 +284,7 @@ async def parseCommand(message, client):
             logCommand(message, client, '~games')
 
         elif message.content.startswith('~battleroyale'):
-            await battle_royale(message, client)
+            await battle_royale(message, client, False)
             logCommand(message, client, '~battleroyale')
 
         elif message.content.startswith('~battle'):

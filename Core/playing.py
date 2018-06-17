@@ -134,7 +134,7 @@ async def battle(message, client):
     await message.channel.send(winner_name + " defeated " + loser_name + "!")
 
 
-async def battle_royale(message, client):
+async def battle_royale(message, client, verbose):
     # get candidates from mention/role/guild list
     candidates = await get_player_list(message)
     # get fighters from candidates
@@ -144,119 +144,58 @@ async def battle_royale(message, client):
     if len(fighters) < 3:
         await message.channel.send(":x:It's not a battle royal if you don't have at least 3 fighters:x:")
         return
-    round_count = 0
-    # As long as there is more than 1 fighter, do another round.
-    while len(fighters) > 1:
-        name_len = 8
-        for fighter in fighters:
-            if len(fighters[fighter]["name"]) > name_len:
-                name_len = len(fighters[fighter]["name"])
-        battlerecord = ""
-        if round_count is not 0:
-            time.sleep(2.5)
-        # get keys
-        rand_fighters = list(fighters.keys())
-        # shuffle keys
-        random.shuffle(rand_fighters)
-        # play with shuffled keys
-        for attacker in rand_fighters.copy():
-            if fighters.get(attacker) is None:
-                continue
-            defender = None
-            # Select a defender
-            # if there is a potential for revenge, 50% chance of hitting them
-            if fighters[attacker]["revenge"] is not None and fighters.get(fighters[attacker]["revenge"]) is not None and randint(1,10) <= 5:
-                defender = fighters[attacker]["revenge"]
-            # if there is no one left to hit, check for suicide
-            elif len(fighters) is 1:
-                if randint(1,20) is 1:
-                    damage = randint(1, 10)
-                    fighters[attacker]["hp"] -= damage
-                    battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
-                    if fighters[attacker]["hp"] < 1:
-                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, decides to end it all.\n"
-                        fighters.pop(attacker, None)
-                    else:
-                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, attemps to end it all, but fails.\n"
 
-                continue
-            # else, pick a person who is not the attacker
-            else:
-                while defender is attacker or defender is None:
-                    defender = random.choice(list(fighters))
-            # roll to hit
-            roll = randint(1, 20)
-            # Hit self for 1-10 on fail
-            if roll is 1:
-                damage = randint(1, 10)
-                fighters[attacker]["hp"] -= damage
-                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
-                if fighters[attacker]["hp"] < 1:
-                    battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + " kills themself out of shame.\n"
-                else:
-                    battlerecord += "\tCritical fail!\n"
-            # Deal 1-10 extra damage on critical
-            elif roll is 20:
-                damage = roll + 10 + randint(1, 10)
-                fighters[defender]["hp"] -= damage
-                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
-                if fighters[defender]["hp"] < 1:
-                    battlerecord += "\tCritical hit! " + fighters[attacker]["name"] + " fucking murders " + fighters[defender]["name"] + "!\n"
-                else:
-                    battlerecord += "\tCritical hit!\n"
-            # Deal 12-29 on hit
-            else:
-                damage = roll + 10
-                fighters[defender]["hp"] -= damage
-                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
-                if fighters[defender]["hp"] < 1:
-                    battlerecord += "\t" + fighters[attacker]["name"] + " kills " + fighters[defender]["name"] + "!\n"
-                else:
-                    battlerecord += "\n"
-            # defender will remember you attacked them
-            fighters[defender]["revenge"] = attacker
-            # remove attacker and/or defender if they died
-            if fighters[defender]["hp"] < 1:
-                fighters.pop(defender, None)
-            if fighters[attacker]["hp"] < 1:
-                fighters.pop(attacker, None)
+    await enact_battle(message, fighters, verbose)
+    # TODO - alphabatize fighters by name
 
-        # print battle report
-        line_by_line = battlerecord.split("\n")
-        round_count += 1
-        output = "```\n\tRound {}\n".format(round_count)
-        for line in line_by_line:
-            if len(output) + len(line) < 1900:
-                output += line + "\n"
-            else:
-                output += "\n```"
-                await message.channel.send(output)
-                output = "```\n" + line + "\n"
-        output += "```"
-        await message.channel.send(output)
+    """
+    if randint(1,20) is 1:
+        damage = randint(1, 10)
+        fighters[attacker]["hp"] -= damage
+        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
+        if fighters[attacker]["hp"] < 1:
+            battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, decides to end it all.\n"
+            fighters.pop(attacker, None)
+        else:
+            battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, attemps to end it all, but fails.\n"
 
-        # print hp report
-        output = "```\nRemaining Contestants: {}\n".format(len(fighters))
-        for contestant in fighters:
-            line = "{:{x}}: {:3}\n".format(fighters[contestant]["name"], fighters[contestant]["hp"], x=name_len)
-            if len(output) + len(line) < 1900:
-                output += line
-            else:
-                output += "\n```"
-                await message.channel.send(output)
-                output = "```\n" + line
-        if len(fighters) is 0:
-            output += "Lots of corpses\n"
-        output += "```"
-        await message.channel.send(output)
-
-    win_message = "```\nBehold your champion, {} of {}!\n```"
-    lose_message = "```\nLoser, loser, chicken loser.```"
+    # roll to hit
+    roll = randint(1, 20)
+    # Hit self for 1-10 on fail
+    if roll is 1:
+        damage = randint(1, 10)
+        fighters[attacker]["hp"] -= damage
+        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
+        if fighters[attacker]["hp"] < 1:
+            battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + " kills themself out of shame.\n"
+        else:
+            battlerecord += "\tCritical fail!\n"
+    # Deal 1-10 extra damage on critical
+    elif roll is 20:
+        damage = roll + 10 + randint(1, 10)
+        fighters[defender]["hp"] -= damage
+        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
+        if fighters[defender]["hp"] < 1:
+            battlerecord += "\tCritical hit! " + fighters[attacker]["name"] + " fucking murders " + fighters[defender]["name"] + "!\n"
+        else:
+            battlerecord += "\tCritical hit!\n"
+    # Deal 12-29 on hit
+    else:
+        damage = roll + 10
+        fighters[defender]["hp"] -= damage
+        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
+        if fighters[defender]["hp"] < 1:
+            battlerecord += "\t" + fighters[attacker]["name"] + " kills " + fighters[defender]["name"] + "!\n"
+        else:
+            battlerecord += "\n"
+    """
     if len(fighters) is 0:
-        await message.channel.send(lose_message)
+        await message.channel.send("```\nLoser, loser, chicken loser.\n```")
     else:
         victor = fighters[random.choice(list(fighters))]["name"]
-        await message.channel.send(win_message.format(victor, message.guild.name))
+        await message.channel.send("```\nBehold your champion, {} of {}!\n```".format(victor, message.guild.name))
+
+
 
 
 async def role_mentioned(message):
@@ -303,3 +242,102 @@ async def populate_roster(candidates):
         fighters[str(index)]["hp"] = 100
         fighters[str(index)]["revenge"] = None
     return fighters
+
+
+async def preform_attack(fighters, attacker, defender, verbose):
+    # Person to take the damage, defender unless there is a critical fail
+    target = defender
+    # Was this a critical hit?
+    critical = True
+    # Roll to hit
+    roll = randint(1, 20)
+    # Damage total
+    damage = randint(1, 10) + roll
+    # Critical fail, hit self
+    if roll is 1:
+        target = attacker
+    elif roll is 20:
+        damage += 10
+    else:
+        critical = False
+    # TODO - uncomment for testing
+    # If there are no other defenders, and the attacker didn't hit themself
+    if target is None:
+        return ""
+    # Target takes damage
+    fighters[target]["hp"] -= damage
+    battle_report = ""
+    if verbose:
+        battle_report += ""
+        # TODO - do verbose things
+    if fighters[target]["hp"] < 1:
+        if target is attacker:
+            battle_report += "{} kills themself out of shame.\n".format(fighters[attacker]["name"])
+        elif critical:
+            battle_report += "{} fucking murders {}!\n".format(fighters[attacker]["name"], fighters[defender]["name"])
+        else:
+            battle_report += "{} kills {}!\n".format(fighters[attacker]["name"], fighters[defender]["name"])
+        # Remove the dead candidate form the roster
+        fighters.pop(target, None)
+    else:
+        # Defender will attempt revenge
+        fighters[defender]["revenge"] = attacker
+    return battle_report
+
+
+async def enact_round(message, fighters, round_count, verbose):
+    # Text record of what happens during each round
+    battle_report = ""
+    # Shuffle the fighter attack order
+    shuffled_fighters = list(fighters.keys())
+    random.shuffle(shuffled_fighters)
+    for attacker in shuffled_fighters:
+        # if attacker is dead
+        if fighters.get(attacker) is None:
+            continue
+        # Select defender
+        defender = None
+        # if there is a potential for revenge, 50% chance of hitting them
+        if fighters[attacker]["revenge"] is not None and fighters.get(fighters[attacker]["revenge"]) is not None and randint(0,1) is 1:
+            defender = fighters[attacker]["revenge"]
+        # if there is no one left to hit, check for suicide
+        elif len(fighters) is 1:
+            # TODO - commit sepakku
+            print("")  # TODO - remove once this is done
+        # Otherwise, choose a random opponent
+        else:
+            while defender is attacker or defender is None:
+                defender = random.choice(list(fighters))
+        #
+        battle_report += await preform_attack(fighters, attacker, defender, verbose)
+    return battle_report
+
+
+async def enact_battle(message, fighters, verbose):
+    round_count = 0
+    # As long as there is more than 1 fighter, do another round.
+    while len(fighters) > 1:
+        name_len = 0
+        for fighter in fighters:
+            if len(fighters[fighter]["name"]) > name_len:
+                name_len = len(fighters[fighter]["name"])
+        # TODO - change where the delay takes place
+        if round_count is not 0:
+            time.sleep(1.5)
+        battle_report = await enact_round(message, fighters, round_count, verbose)
+        # TODO - comment below here
+        line_by_line = battle_report.split("\n")
+        round_count += 1
+        output = "```\n\tRound  {}:\tCombatants: {}\n".format(round_count, len(fighters))
+        if len(line_by_line) is 1 and len(line_by_line[0]) is 0:
+            output += "No fatalities.\n"
+        for line in line_by_line:
+            if len(output) + len(line) < 1900:
+                output += line + "\n"
+            else:
+                output += "```"
+                await message.channel.send(output)
+                output = "```\n" + line + "\n"
+        output += "```"
+        await message.channel.send(output)
+
