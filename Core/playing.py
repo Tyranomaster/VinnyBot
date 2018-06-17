@@ -133,23 +133,12 @@ async def battle(message, client):
         winner_name = defender_name
     await message.channel.send(winner_name + " defeated " + loser_name + "!")
 
+
 async def battle_royale(message, client):
+    # get candidates from mention/role/guild list
     candidates = await get_player_list(message)
-    # Get fighters' nicks and names into a list
-    fighters = {}
-    for index, candidate in enumerate(candidates):
-        # filter out bots
-        if candidate.bot:
-            continue
-        nameo = candidate.nick
-        if nameo is None:
-            nameo = candidate.name
-        # Each player has a dictionary with current hp, mentionable name, and player key to get revenge on.
-        fighters[str(index)] = {}
-        fighters[str(index)]["name"] = nameo
-        fighters[str(index)]["hp"] = 100
-        fighters[str(index)]["mention"] = candidate.mention
-        fighters[str(index)]["revenge"] = None
+    # get fighters from candidates
+    fighters = await populate_roster(candidates)
 
     # Weed out any fringe cases
     if len(fighters) < 3:
@@ -296,3 +285,21 @@ async def get_player_list(message):
     else:
         candidates = message.guild.members
     return candidates
+
+
+async def populate_roster(candidates):
+    # add eligible candidates to the fighters list
+    fighters = {}
+    for index, candidate in enumerate(candidates):
+        # filter out bots
+        if candidate.bot:
+            continue
+        name = candidate.nick
+        if name is None:
+            name = candidate.name
+        # Each player has a dictionary with hp, name, and revenge key
+        fighters[str(index)] = {}
+        fighters[str(index)]["name"] = name
+        fighters[str(index)]["hp"] = 100
+        fighters[str(index)]["revenge"] = None
+    return fighters
