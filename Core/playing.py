@@ -159,6 +159,62 @@ async def battle_royale(message, client, verbose):
         await message.channel.send("```\nBehold your champion, {} of {}!\n```".format(victor, message.guild.name))
 
 
+async def equip_combatant(fighters, index):
+    fighters[index]["weapon"] = {}
+    fighters[index]["armor"] = {}
+
+    # Roll for weapon
+    luck = randint(0, 10000)
+    if 0 <= luck <= 4900:
+        fighters[index]["weapon"]["name"] = "fist"
+        fighters[index]["weapon"]["damage"] = 0
+    elif 5000 < luck <= 7500:
+        fighters[index]["weapon"]["name"] = "knife"
+        fighters[index]["weapon"]["damage"] = 1
+    elif 7500 < luck <= 8500:
+        fighters[index]["weapon"]["name"] = "machete"
+        fighters[index]["weapon"]["damage"] = 2
+    elif 8500 < luck <= 9300:
+        fighters[index]["weapon"]["name"] = "pistol"
+        fighters[index]["weapon"]["damage"] = 4
+    elif 9300 < luck <= 9600:
+        fighters[index]["weapon"]["name"] = "shotgun"
+        fighters[index]["weapon"]["damage"] = 6
+    elif 9600 < luck <= 9700:
+        fighters[index]["weapon"]["name"] = "wok"
+        fighters[index]["weapon"]["damage"] = 9
+    elif 9700 < luck <= 9900:
+        fighters[index]["weapon"]["name"] = "assault rifle"
+        fighters[index]["weapon"]["damage"] = 10
+    elif 9900 < luck <= 10000:
+        fighters[index]["weapon"]["name"] = "sniper rifle"
+        fighters[index]["weapon"]["damage"] = 15
+    # Reroll for armor
+    luck = randint(0, 10000)
+    if 0 <= luck <= 5000:
+        fighters[index]["armor"]["name"] = "t-shirt"
+        fighters[index]["armor"]["resist"] = 0
+    elif 5000 < luck <= 7500:
+        fighters[index]["armor"]["name"] = "sweatshirt"
+        fighters[index]["armor"]["resist"] = 1
+    elif 7500 < luck <= 8500:
+        fighters[index]["armor"]["name"] = "bike helmet"
+        fighters[index]["armor"]["resist"] = 2
+    elif 8500 < luck <= 9300:
+        fighters[index]["armor"]["name"] = "police vest"
+        fighters[index]["armor"]["resist"] = 3
+    elif 9300 < luck <= 9700:
+        fighters[index]["armor"]["name"] = "kevlar"
+        fighters[index]["armor"]["resist"] = 4
+    elif 9700 < luck <= 9900:
+        fighters[index]["armor"]["name"] = "SWAT gear"
+        fighters[index]["armor"]["resist"] = 6
+    elif 9900 < luck <= 1000:
+        fighters[index]["armor"]["name"] = "wok"
+        fighters[index]["armor"]["resist"] = 8
+    return fighters
+
+
 async def role_mentioned(message):
     # If there is more than 1 element (the command) in the message, see if it's a role.
     if len(message.content.split(" ")) > 1:
@@ -233,8 +289,7 @@ async def enact_attack(fighters, attacker, defender, verbose):
         # Get the max name length
         name_len = 0
         for fighter in fighters:
-            if len(fighters[fighter]["name"]) > name_len:
-                name_len = len(fighters[fighter]["name"])
+            name_len = max(len(fighters[fighter]["name"]), name_len)
         # Print the default format attack
         battle_report += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], ("themself" if attacker is target else fighters[target]["name"]), str(damage), x=name_len, y=name_len)
         # When attacker is the last person, print special messages
@@ -329,4 +384,5 @@ async def enact_battle(message, fighters, verbose):
         output += "```"
         await message.channel.send(output)
         time.sleep(1)
+        # TODO - print hp in verbose
 
