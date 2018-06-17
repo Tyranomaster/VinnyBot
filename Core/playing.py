@@ -221,8 +221,7 @@ async def battle_royale(message, client):
             else:
                 damage = roll + 10
                 fighters[defender]["hp"] -= damage
-                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len,
-                                                                        y=name_len)
+                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
                 if fighters[defender]["hp"] < 1:
                     battlerecord += "\t" + fighters[attacker]["name"] + " kills " + fighters[defender]["name"] + "!\n"
                 else:
