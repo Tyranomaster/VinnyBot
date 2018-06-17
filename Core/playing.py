@@ -147,6 +147,16 @@ async def battle_royale(message, client, verbose):
         return
 
     # TODO - alphabatize fighters by name
+    #temp_fighters = fighters
+    #fighters = {}
+    #keys = list()
+    #for fighter in fighters:
+    #    keys += fighters[fighter]["name"]
+    #keys.sort()
+    #while len(temp_fighters) > 0:
+    #    key = keys.pop()
+    #    print(key)
+    #    fighters[key] = temp_fighters.pop(key)
 
     # Enact the battle of our lifetimes
     await enact_battle(message, fighters, verbose)
@@ -259,6 +269,7 @@ async def populate_roster(candidates):
         fighters[str(index)]["name"] = name
         fighters[str(index)]["hp"] = 100
         fighters[str(index)]["revenge"] = None
+        equip_combatant(fighters, str(index))
     return fighters
 
 
@@ -357,7 +368,6 @@ async def enact_battle(message, fighters, verbose):
         for fighter in fighters:
             name_len = max(len(fighters[fighter]["name"]), name_len)
         battle_report = await enact_round(fighters, name_len, verbose)
-        # TODO - comment below here
         # Split the battle report into an array of each line
         line_by_line = battle_report.split("\n")
         round_count += 1
