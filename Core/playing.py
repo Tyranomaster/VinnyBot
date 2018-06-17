@@ -429,12 +429,12 @@ async def enact_battle(message, fighters, verbose):
                 output += "```"
                 await message.channel.send(output)
                 output = "```\n" + line + "\n"
-                time.sleep(1)
+                time.sleep(1.25)
         output += "```"
         await message.channel.send(output)
+        time.sleep(1.25)
         # In verbose mode, print all combatant's hp
         if verbose:
-            time.sleep(1)
             output = "```\nRemaining Combatants: {}\n".format(len(fighters))
             for fighter in fighters:
                 line = "{:{x}}: {:<2}\n".format(fighters[fighter]["name"], fighters[fighter]["hp"], x=name_len)
@@ -443,7 +443,9 @@ async def enact_battle(message, fighters, verbose):
                 else:
                     output += "```"
                     await message.channel.send(output)
+                    time.sleep(1.25)
                     output = "```\n{}".format(line)
             output += "```"
             await message.channel.send(output)
+            time.sleep(1.25)
 
