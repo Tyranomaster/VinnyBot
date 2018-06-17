@@ -183,10 +183,10 @@ async def battle_royale(message, client):
                     fighters[attacker]["hp"] -= damage
                     battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
                     if fighters[attacker]["hp"] < 1:
-                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before him, decides to end it all.\n"
+                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, decides to end it all.\n"
                         fighters.pop(attacker, None)
                     else:
-                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before him, attemps to end it all, but fails.\n"
+                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, attemps to end it all, but fails.\n"
 
                 continue
             # else, pick a person who is not the attacker
@@ -268,9 +268,7 @@ async def battle_royale(message, client):
         output += "```"
         await message.channel.send(output)
 
-    # TODO - make better victory message
     win_message_2 = "```\nBehold your champion, {} of {}!\n```"
-    win_message = "```\nAgainst all odds, {} has risen to the top, defeating all others.\n```"
     lose_message = "```\nLoser, loser, chicken loser.```"
     if len(fighters) is 0:
         await message.channel.send(lose_message)
