@@ -262,7 +262,7 @@ async def populate_roster(candidates):
     return fighters
 
 
-async def enact_attack(fighters, attacker, defender, verbose):
+async def enact_attack(fighters, attacker, defender, name_len, verbose):
     # Person to take the damage, defender unless there is a critical fail
     target = defender
     # Was this a critical hit?
@@ -285,11 +285,6 @@ async def enact_attack(fighters, attacker, defender, verbose):
     fighters[target]["hp"] -= damage
     battle_report = ""
     if verbose:
-        # TODO - move this where it will happen less
-        # Get the max name length
-        name_len = 0
-        for fighter in fighters:
-            name_len = max(len(fighters[fighter]["name"]), name_len)
         # Print the default format attack
         battle_report += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], ("themself" if attacker is target else fighters[target]["name"]), str(damage), x=name_len, y=name_len)
         # When attacker is the last person, print special messages
@@ -327,7 +322,7 @@ async def enact_attack(fighters, attacker, defender, verbose):
     return battle_report
 
 
-async def enact_round(fighters, verbose):
+async def enact_round(fighters, name_len, verbose):
     # Text record of what happens during each round
     battle_report = ""
     # Shuffle the fighter attack order
@@ -344,15 +339,13 @@ async def enact_round(fighters, verbose):
             defender = fighters[attacker]["revenge"]
         # if there is no one left to hit, check for suicide
         elif len(fighters) is 1:
-            battle_report += await enact_attack(fighters, attacker, defender, verbose)
-            # TODO - commit sepakku
-            print("")  # TODO - remove once this is done
+            battle_report += await enact_attack(fighters, attacker, defender, name_len, verbose)
         # Otherwise, choose a random opponent
         else:
             while defender is attacker or defender is None:
                 defender = random.choice(list(fighters))
         # Enact an attack, and save the battle report for it
-        battle_report += await enact_attack(fighters, attacker, defender, verbose)
+        battle_report += await enact_attack(fighters, attacker, defender, name_len, verbose)
     return battle_report
 
 
@@ -362,9 +355,8 @@ async def enact_battle(message, fighters, verbose):
     while len(fighters) > 1:
         name_len = 0
         for fighter in fighters:
-            if len(fighters[fighter]["name"]) > name_len:
-                name_len = len(fighters[fighter]["name"])
-        battle_report = await enact_round(fighters, verbose)
+            name_len = max(len(fighters[fighter]["name"]), name_len)
+        battle_report = await enact_round(fighters, name_len, verbose)
         # TODO - comment below here
         # Split the battle report into an array of each line
         line_by_line = battle_report.split("\n")
@@ -383,6 +375,18 @@ async def enact_battle(message, fighters, verbose):
                 time.sleep(1)
         output += "```"
         await message.channel.send(output)
-        time.sleep(1)
-        # TODO - print hp in verbose
+        # In verbose mode, print all combatant's hp
+        if verbose:
+            time.sleep(1)
+            output = "```\nRemaining Combatants: {}\n".format(len(fighters))
+            for fighter in fighters:
+                line = "{:{x}}: {:<2}\n".format(fighters[fighter]["name"], fighters[fighter]["hp"], x=name_len)
+                if len(output) + len(line) < 1900:
+                    output += line
+                else:
+                    output += "```"
+                    await message.channel.send(output)
+                    output = "```\n{}".format(line)
+            output += "```"
+            await message.channel.send(output)
 
