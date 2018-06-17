@@ -236,13 +236,6 @@ async def battle_royale(message, client):
             if fighters[attacker]["hp"] < 1:
                 fighters.pop(attacker, None)
 
-        # get hp for living players
-        hp_list = ""
-        for contestant in fighters:
-            hp_list += "{:{x}}: {:3}\n".format(fighters[contestant]["name"], fighters[contestant]["hp"], x=name_len)
-        if hp_list is "":
-            hp_list = "Lots of corpses"
-
         # print battle report
         line_by_line = battlerecord.split("\n")
         round_count += 1
