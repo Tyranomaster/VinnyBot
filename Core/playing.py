@@ -158,48 +158,6 @@ async def battle_royale(message, client, verbose):
         victor = fighters[random.choice(list(fighters))]["name"]
         await message.channel.send("```\nBehold your champion, {} of {}!\n```".format(victor, message.guild.name))
 
-    """
-    if randint(1,20) is 1:
-        damage = randint(1, 10)
-        fighters[attacker]["hp"] -= damage
-        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
-        if fighters[attacker]["hp"] < 1:
-            battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, decides to end it all.\n"
-            fighters.pop(attacker, None)
-        else:
-            battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before them, attemps to end it all, but fails.\n"
-
-    # roll to hit
-    roll = randint(1, 20)
-    # Hit self for 1-10 on fail
-    if roll is 1:
-        damage = randint(1, 10)
-        fighters[attacker]["hp"] -= damage
-        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
-        if fighters[attacker]["hp"] < 1:
-            battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + " kills themself out of shame.\n"
-        else:
-            battlerecord += "\tCritical fail!\n"
-    # Deal 1-10 extra damage on critical
-    elif roll is 20:
-        damage = roll + 10 + randint(1, 10)
-        fighters[defender]["hp"] -= damage
-        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
-        if fighters[defender]["hp"] < 1:
-            battlerecord += "\tCritical hit! " + fighters[attacker]["name"] + " fucking murders " + fighters[defender]["name"] + "!\n"
-        else:
-            battlerecord += "\tCritical hit!\n"
-    # Deal 12-29 on hit
-    else:
-        damage = roll + 10
-        fighters[defender]["hp"] -= damage
-        battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len, y=name_len)
-        if fighters[defender]["hp"] < 1:
-            battlerecord += "\t" + fighters[attacker]["name"] + " kills " + fighters[defender]["name"] + "!\n"
-        else:
-            battlerecord += "\n"
-    """
-
 
 async def role_mentioned(message):
     # If there is more than 1 element (the command) in the message, see if it's a role.
@@ -271,20 +229,46 @@ async def enact_attack(fighters, attacker, defender, verbose):
     fighters[target]["hp"] -= damage
     battle_report = ""
     if verbose:
-        battle_report += ""
-        # TODO - do verbose things
+        # TODO - move this where it will happen less
+        # Get the max name length
+        name_len = 0
+        for fighter in fighters:
+            if len(fighters[fighter]["name"]) > name_len:
+                name_len = len(fighters[fighter]["name"])
+        # Print the default format attack
+        battle_report += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], ("themself" if attacker is target else fighters[target]["name"]), str(damage), x=name_len, y=name_len)
+        # When attacker is the last person, print special messages
+        if critical:
+            if target is defender:
+                battle_report += "\tCritical hit! "
+            elif target is attacker:
+                battle_report += "\tCritical fail! "
+                if fighters[target]["hp"] > 0 and len(fighters) is 1:
+                    battle_report += "{}, seeing no more opponents before them, attempts to end it all, but fails. Not that we expected anything more from them.".format(fighters[attacker]["name"])
+        elif fighters[target]["hp"] < 1:
+            battle_report += "\t"
+
+        if defender is None:
+            if fighters[target]["hp"] < 1:
+                battle_report += "\tTest"
+
     if fighters[target]["hp"] < 1:
         if target is attacker:
-            battle_report += "{} kills themself out of shame.\n".format(fighters[attacker]["name"])
+            if len(fighters) is 1:
+                battle_report += "{}, seeing no more opponents before them, decides to end it all.".format(fighters[attacker]["name"])
+            else:
+                battle_report += "{} kills themself out of shame.".format(fighters[attacker]["name"])
         elif critical:
-            battle_report += "{} fucking murders {}!\n".format(fighters[attacker]["name"], fighters[defender]["name"])
+            battle_report += "{} fucking murders {}!".format(fighters[attacker]["name"], fighters[defender]["name"])
         else:
-            battle_report += "{} kills {}!\n".format(fighters[attacker]["name"], fighters[defender]["name"])
+            battle_report += "{} kills {}!".format(fighters[attacker]["name"], fighters[defender]["name"])
         # Remove the dead candidate form the roster
         fighters.pop(target, None)
     else:
         # Defender will attempt revenge
         fighters[defender]["revenge"] = attacker
+    if len(battle_report) > 0:
+        battle_report += "\n"
     return battle_report
 
 
