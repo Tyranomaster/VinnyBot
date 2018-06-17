@@ -1,6 +1,7 @@
 import discord
 import operator
 import time
+import random
 from random import randint
 
 async def games(message, client):
@@ -131,3 +132,149 @@ async def battle(message, client):
         loser_name = attacker_name
         winner_name = defender_name
     await message.channel.send(winner_name + " defeated " + loser_name + "!")
+
+async def battle_royale(message, client):
+    # Get contestant list
+    candidates = message.guild.members
+    # Weed out any fringe cases
+    if len(candidates) < 3:
+        await message.channel.send(":x:It's not a battle royal if you don't have at least 3 fighters:x:")
+        return
+
+    # Get fighters' nicks and names into a list
+    fighters = {}
+    i = 0
+    for candidate in candidates:
+        i += 1
+        nameo = candidate.nick
+        if nameo is None:
+            nameo = candidate.name
+        # nameo = str(i) + "(" + nameo + ")"
+        # Each player has a dictionary with current hp, mentionable name, and player key to get revenge on.
+        fighters[str(i)] = {}
+        fighters[str(i)]["name"] = nameo
+        fighters[str(i)]["hp"] = 100
+        fighters[str(i)]["mention"] = candidate.mention
+        fighters[str(i)]["revenge"] = None
+
+    round_count = 0
+    while len(fighters) > 1:
+        # As long as there is more than 1 fighter, do another round.
+        # TODO - scramble the list
+        name_len = 8
+        for fighter in fighters:
+            if len(fighters[fighter]["name"]) > name_len:
+                name_len = len(fighters[fighter]["name"])
+        battlerecord = ""
+        if round_count is not 0:
+            time.sleep(2.5)
+        for attacker in fighters.copy():
+            if fighters.get(attacker) is None:
+                continue
+            defender = None
+            # Select a defender
+            # if there is a potential for revenge, 50% chance of hitting them
+            if fighters[attacker]["revenge"] is not None and fighters.get(fighters[attacker]["revenge"]) is not None and randint(1,10) <= 5:
+                defender = fighters[attacker]["revenge"]
+            # if there is no one left to hit, check for suicide
+            elif len(fighters) is 1:
+                if randint(1,20) is 1:
+                    damage = randint(1, 10)
+                    fighters[attacker]["hp"] -= damage
+                    battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
+                    if fighters[attacker]["hp"] < 1:
+                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before him, decides to end it all.\n"
+                        fighters.pop(attacker, None)
+                    else:
+                        battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + ", seeing no more opponents before him, attemps to end it all, but fails.\n"
+
+                continue
+            # else, pick a person who is not the attacker
+            else:
+                while defender is attacker or defender is None:
+                    defender = random.choice(list(fighters))
+            # roll to hit
+            roll = randint(1, 20)
+            # Hit self for 1-10 on fail
+            if roll is 1:
+                damage = randint(1, 10)
+                fighters[attacker]["hp"] -= damage
+                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], "themself", str(damage), x=name_len, y=name_len)
+                if fighters[attacker]["hp"] < 1:
+                    battlerecord += "\tCritical fail! " + fighters[attacker]["name"] + " kills themself out of shame.\n"
+                else:
+                    battlerecord += "\tCritical fail!\n"
+            # Deal 1-10 extra damage on critical
+            elif roll is 20:
+                damage = roll + 10 + randint(1, 10)
+                fighters[defender]["hp"] -= damage
+                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len,
+                                                                        y=name_len)
+                if fighters[attacker]["hp"] < 1:
+                    battlerecord += "\tCritical hit! " + fighters[attacker]["name"] + " fucking murders " + fighters[defender]["name"] + "!\n"
+                else:
+                    battlerecord += "\tCritical hit!\n"
+            # Deal 12-29 on hit
+            else:
+                damage = roll + 10
+                fighters[defender]["hp"] -= damage
+                battlerecord += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], fighters[defender]["name"], str(damage), x=name_len,
+                                                                        y=name_len)
+                if fighters[defender]["hp"] < 1:
+                    battlerecord += "\t" + fighters[attacker]["name"] + " kills " + fighters[defender]["name"] + "!\n"
+                else:
+                    battlerecord += "\n"
+            # defender will remember you attacked them
+            fighters[defender]["revenge"] = attacker
+            # remove attacker and/or defender if they died
+            if fighters[defender]["hp"] < 1:
+                fighters.pop(defender, None)
+            if fighters[attacker]["hp"] < 1:
+                fighters.pop(attacker, None)
+
+        # get hp for living players
+        hp_list = ""
+        for contestant in fighters:
+            hp_list += "{:{x}}: {:3}\n".format(fighters[contestant]["name"], fighters[contestant]["hp"], x=name_len)
+        if hp_list is "":
+            hp_list = "Lots of corpses"
+
+        # print battle report
+        line_by_line = battlerecord.split("\n")
+        round_count += 1
+        output = "```\n\tRound {}\n".format(round_count)
+        for line in line_by_line:
+            if len(output) + len(line) < 1900:
+                output += line + "\n"
+            else:
+                output += "\n```"
+                await message.channel.send(output)
+                output = "```\n" + line + "\n"
+        output += "```"
+        await message.channel.send(output)
+
+        # print hp report
+        output = "```\nRemaining Contestants:\n"
+        for contestant in fighters:
+            line = "{:{x}}: {:3}\n".format(fighters[contestant]["name"], fighters[contestant]["hp"], x=name_len)
+            if len(output) + len(line) < 1900:
+                output += line
+            else:
+                output += "\n```"
+                await message.channel.send(output)
+                output = "```\n" + line
+        if len(fighters) is 0:
+            output += "Lots of corpses\n"
+        output += "```"
+        await message.channel.send(output)
+
+    # TODO - make better victory message
+    win_message_2 = "```\nBehold your champion, {} of {}!\n```"
+    win_message = "```\nAgainst all odds, {} has risen to the top, defeating all others.\n```"
+    lose_message = "```\nLoser, loser, chicken loser.```"
+    if len(fighters) is 0:
+        await message.channel.send(lose_message)
+    else:
+        victor = fighters[random.choice(list(fighters))]["name"]
+        await message.channel.send(win_message_2.format(victor, message.guild.name))
+        # await message.channel.send(win_message.format(fighters[victor]["mention"]))
