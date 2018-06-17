@@ -165,8 +165,10 @@ async def battle_royale(message, client, verbose):
     if len(fighters) is 0:
         await message.channel.send("```\nLoser, loser, chicken loser.\n```")
     else:
-        victor = fighters[random.choice(list(fighters))]["name"]
-        await message.channel.send("```\nBehold your champion, {} of {}!\n```".format(victor, message.guild.name))
+        victor = fighters[random.choice(list(fighters))]
+        weapon = victor["weapon"]["name"]
+        armor = victor["armor"]["name"]
+        await message.channel.send("```\nBehold your champion, {} of {}, weilding their mighty {} and wearing their {}!\n```".format(victor["name"], message.guild.name, weapon, armor))
 
 
 async def equip_combatant(fighters, index):
@@ -175,30 +177,62 @@ async def equip_combatant(fighters, index):
 
     # Roll for weapon
     luck = randint(0, 10000)
-    if 0 <= luck <= 4900:
+    if 0 <= luck <= 5000:
         fighters[index]["weapon"]["name"] = "fist"
         fighters[index]["weapon"]["damage"] = 0
+        fighters[index]["weapon"]["hit"] = "punches"
+        fighters[index]["weapon"]["crit"] = "pimpslaps"
+        fighters[index]["weapon"]["self"] = "smacks"
+        fighters[index]["weapon"]["suicide"] = "strangles"
     elif 5000 < luck <= 7500:
         fighters[index]["weapon"]["name"] = "knife"
         fighters[index]["weapon"]["damage"] = 1
+        fighters[index]["weapon"]["hit"] = "slashes"
+        fighters[index]["weapon"]["crit"] = "stabs"
+        fighters[index]["weapon"]["self"] = "cuts"
+        fighters[index]["weapon"]["suicide"] = "wrist cuts"
     elif 7500 < luck <= 8500:
-        fighters[index]["weapon"]["name"] = "machete"
+        fighters[index]["weapon"]["name"] = "katana"
         fighters[index]["weapon"]["damage"] = 2
+        fighters[index]["weapon"]["hit"] = "slices"
+        fighters[index]["weapon"]["crit"] = "cleaves"
+        fighters[index]["weapon"]["self"] = "teleports behind"
+        fighters[index]["weapon"]["suicide"] = "sepukus"
     elif 8500 < luck <= 9300:
         fighters[index]["weapon"]["name"] = "pistol"
         fighters[index]["weapon"]["damage"] = 4
+        fighters[index]["weapon"]["hit"] = "side grips"
+        fighters[index]["weapon"]["crit"] = "pistol whips"
+        fighters[index]["weapon"]["self"] = "shoots"
+        fighters[index]["weapon"]["suicide"] = "\"headshots\""
     elif 9300 < luck <= 9600:
         fighters[index]["weapon"]["name"] = "shotgun"
         fighters[index]["weapon"]["damage"] = 6
+        fighters[index]["weapon"]["hit"] = "peppers"
+        fighters[index]["weapon"]["crit"] = "point blanks"
+        fighters[index]["weapon"]["self"] = "recoil hits"
+        fighters[index]["weapon"]["suicide"] = "Kurt Cobains"
     elif 9600 < luck <= 9700:
         fighters[index]["weapon"]["name"] = "wok"
         fighters[index]["weapon"]["damage"] = 9
+        fighters[index]["weapon"]["hit"] = "clangs"
+        fighters[index]["weapon"]["crit"] = "clonks"
+        fighters[index]["weapon"]["self"] = "bongs"
+        fighters[index]["weapon"]["suicide"] = "bangs"
     elif 9700 < luck <= 9900:
         fighters[index]["weapon"]["name"] = "assault rifle"
         fighters[index]["weapon"]["damage"] = 10
+        fighters[index]["weapon"]["hit"] = "assaults"
+        fighters[index]["weapon"]["crit"] = "full autos"
+        fighters[index]["weapon"]["self"] = "fires upon"
+        fighters[index]["weapon"]["suicide"] = "ends"
     elif 9900 < luck <= 10000:
         fighters[index]["weapon"]["name"] = "sniper rifle"
         fighters[index]["weapon"]["damage"] = 15
+        fighters[index]["weapon"]["hit"] = "downranges"
+        fighters[index]["weapon"]["crit"] = "headshots"
+        fighters[index]["weapon"]["self"] = "questions"
+        fighters[index]["weapon"]["suicide"] = "headsplodes"
     # Reroll for armor
     luck = randint(0, 10000)
     if 0 <= luck <= 5000:
@@ -269,7 +303,7 @@ async def populate_roster(candidates):
         fighters[str(index)]["name"] = name
         fighters[str(index)]["hp"] = 100
         fighters[str(index)]["revenge"] = None
-        equip_combatant(fighters, str(index))
+        fighters = await equip_combatant(fighters, str(index))
     return fighters
 
 
@@ -281,7 +315,11 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
     # Roll to hit
     roll = randint(1, 20)
     # Damage total
-    damage = randint(1, 10) + roll
+    damage = randint(1, 10) + roll + fighters[attacker]["weapon"]["damage"]
+    #max weapon use phrasing length
+    phrase_len = 16
+    #max weapon name length
+    wepn_len = 13
     # Critical fail, hit self
     if roll is 1:
         target = attacker
@@ -293,11 +331,20 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
     if target is None:
         return ""
     # Target takes damage
-    fighters[target]["hp"] -= damage
+    fighters[target]["hp"] -= max(damage - fighters[defender]["armor"]["resist"], 0)
+    hit = ""
+    if roll is 1 and fighters[target]["hp"] < 1:
+        hit = fighters[attacker]["weapon"]["suicide"]
+    elif roll is 1 and fighters[target]["hp"] > 0:
+        hit = fighters[attacker]["weapon"]["self"]
+    elif roll is 20:
+        hit = fighters[attacker]["weapon"]["crit"]
+    else:
+        hit = fighters[attacker]["weapon"]["hit"]
     battle_report = ""
     if verbose:
         # Print the default format attack
-        battle_report += "{:{x}} hits {:{y}} for {:>2}".format(fighters[attacker]["name"], ("themself" if attacker is target else fighters[target]["name"]), str(damage), x=name_len, y=name_len)
+        battle_report += "{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(damage), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
         # When attacker is the last person, print special messages
         if critical:
             if target is defender:
@@ -312,11 +359,11 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
         if defender is None:
             if fighters[target]["hp"] < 1:
                 battle_report += "\tTest"
-
     if fighters[target]["hp"] < 1:
         if target is attacker:
             if len(fighters) is 1:
-                battle_report += "{}, seeing no more opponents before them, decides to end it all.".format(fighters[attacker]["name"])
+                battle_report += "{}, seeing no more opponents before them, decides to end it all.".format(
+                    fighters[attacker]["name"])
             else:
                 battle_report += "{} kills themself out of shame.".format(fighters[attacker]["name"])
         elif critical:
