@@ -134,12 +134,13 @@ async def battle(message, client):
     await message.channel.send(winner_name + " defeated " + loser_name + "!")
 
 async def battle_royale(message, client):
+    candidates = None
     # Get contestant list
-    candidates = message.guild.members
-    # Weed out any fringe cases
-    if len(candidates) < 3:
-        await message.channel.send(":x:It's not a battle royal if you don't have at least 3 fighters:x:")
-        return
+    # if there are mentions, use them. Otherwise, use all guild members
+    if len(message.mentions) > 0:
+        candidates = message.mentions
+    else:
+        candidates = message.guild.members
 
     # Get fighters' nicks and names into a list
     fighters = {}
@@ -157,6 +158,10 @@ async def battle_royale(message, client):
         fighters[str(index)]["mention"] = candidate.mention
         fighters[str(index)]["revenge"] = None
 
+    # Weed out any fringe cases
+    if len(fighters) < 3:
+        await message.channel.send(":x:It's not a battle royal if you don't have at least 3 fighters:x:")
+        return
     round_count = 0
     # As long as there is more than 1 fighter, do another round.
     while len(fighters) > 1:
@@ -249,7 +254,7 @@ async def battle_royale(message, client):
         await message.channel.send(output)
 
         # print hp report
-        output = "```\nRemaining Contestants:\n"
+        output = "```\nRemaining Contestants: {}\n".format(len(fighters))
         for contestant in fighters:
             line = "{:{x}}: {:3}\n".format(fighters[contestant]["name"], fighters[contestant]["hp"], x=name_len)
             if len(output) + len(line) < 1900:
