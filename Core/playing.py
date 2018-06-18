@@ -147,17 +147,19 @@ async def battle_royale(message, client, verbose):
         return
 
     # TODO - alphabatize fighters by name
-    #temp_fighters = fighters
-    #fighters = {}
-    #keys = list()
-    #for fighter in fighters:
-    #    keys += fighters[fighter]["name"]
-    #keys.sort()
-    #while len(temp_fighters) > 0:
-    #    key = keys.pop()
-    #    print(key)
-    #    fighters[key] = temp_fighters.pop(key)
-
+    """
+    temp_fighters = fighters
+    fighters = {}
+    keys = {}
+    for fighter in temp_fighters:
+        keys[temp_fighters[fighter]["name"]] = fighter
+    print(len(keys))
+    for key in sorted(keys):
+        print("Key is " + key)
+        print("Keys[key] is " + keys[key])
+        time.sleep(0.1)
+        fighters[keys[key]] = temp_fighters.pop(keys[key])
+    """
     # Enact the battle of our lifetimes
     await enact_battle(message, fighters, verbose)
 
@@ -253,7 +255,7 @@ async def equip_combatant(fighters, index):
     elif 9700 < luck <= 9900:
         fighters[index]["armor"]["name"] = "SWAT gear"
         fighters[index]["armor"]["resist"] = 6
-    elif 9900 < luck <= 1000:
+    elif 9900 < luck <= 10000:
         fighters[index]["armor"]["name"] = "wok"
         fighters[index]["armor"]["resist"] = 8
     return fighters
@@ -367,9 +369,9 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
             else:
                 battle_report += "{} kills themself out of shame.".format(fighters[attacker]["name"])
         elif critical:
-            battle_report += "{} fucking murders {}!".format(fighters[attacker]["name"], fighters[defender]["name"])
+            battle_report += "{} fucking murders {} with their {}!".format(fighters[attacker]["name"], fighters[defender]["name"], fighters[attacker]["weapon"]["name"])
         else:
-            battle_report += "{} kills {}!".format(fighters[attacker]["name"], fighters[defender]["name"])
+            battle_report += "{} kills {} with their {}!".format(fighters[attacker]["name"], fighters[defender]["name"], fighters[attacker]["weapon"]["name"])
         # Remove the dead candidate form the roster
         fighters.pop(target, None)
     else:
