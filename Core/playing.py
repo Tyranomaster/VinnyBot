@@ -391,7 +391,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
         # When attacker is the last person, print special messages
         if critical:
             if target is defender and destruction is True:
-                battle_report += "\tCritical hit! {} destroyed {}'s {} with their {} ".format(fighters[attacker]["name"], fighters[defender]["name"], armorname, fighters[attacker]["weapon"]["name"])
+                battle_report += "\tCritical hit! {} destroyed {}'s {} with their {}. ".format(fighters[attacker]["name"], fighters[defender]["name"], armorname, fighters[attacker]["weapon"]["name"])
             elif target is defender and destruction is False:
                 battle_report += "\tCritical hit! "
             elif target is attacker:
