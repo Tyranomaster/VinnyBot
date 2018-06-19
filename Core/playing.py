@@ -402,7 +402,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
                 if fighters[target]["hp"] > 0 and len(fighters) is 1:
                     battle_report += "\n{}, seeing no more opponents before them, attempts to end it all, but fails. Not that we expected anything more from them.".format(
                         fighters[attacker]["name"])
-            elif fighters[target]["hp"] < 1:
+        if fighters[target]["hp"] < 1:
                 battle_report += "\n"
 
         if defender is None:
