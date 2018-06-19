@@ -179,13 +179,30 @@ async def equip_combatant(fighters, index):
 
     # Roll for weapon
     luck = randint(0, 10000)
-    if 0 <= luck <= 5000:
-        fighters[index]["weapon"]["name"] = "fist"
+    if 0 <= luck <= 10:
+        fighters[index]["weapon"]["name"] = "oven mitts"
+        fighters[index]["weapon"]["damage"] = -5
+        fighters[index]["weapon"]["hit"] = "pats down"
+        fighters[index]["weapon"]["crit"] = "mitts to the mouth"
+        fighters[index]["weapon"]["self"] = "struggles with"
+        fighters[index]["weapon"]["suicide"] = "chokes"
+        fighters[index]["weapon"]["crip"] = -5
+    elif 10 < luck <= 50:
+        fighters[index]["weapon"]["name"] = "bb gun"
+        fighters[index]["weapon"]["damage"] = -1
+        fighters[index]["weapon"]["hit"] = "\"shoots\""
+        fighters[index]["weapon"]["crit"] = "clubs"
+        fighters[index]["weapon"]["self"] = "enucleates"
+        fighters[index]["weapon"]["suicide"] = "impales"
+        fighters[index]["weapon"]["crip"] = -2
+    elif 50 < luck <= 5000:
+        fighters[index]["weapon"]["name"] = "hand"
         fighters[index]["weapon"]["damage"] = 0
         fighters[index]["weapon"]["hit"] = "punches"
         fighters[index]["weapon"]["crit"] = "pimpslaps"
         fighters[index]["weapon"]["self"] = "smacks"
         fighters[index]["weapon"]["suicide"] = "strangles"
+        fighters[index]["weapon"]["crip"] = 0
     elif 5000 < luck <= 7500:
         fighters[index]["weapon"]["name"] = "knife"
         fighters[index]["weapon"]["damage"] = 1
@@ -193,6 +210,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["crit"] = "stabs"
         fighters[index]["weapon"]["self"] = "cuts"
         fighters[index]["weapon"]["suicide"] = "wrist cuts"
+        fighters[index]["weapon"]["crip"] = 4
     elif 7500 < luck <= 8500:
         fighters[index]["weapon"]["name"] = "katana"
         fighters[index]["weapon"]["damage"] = 2
@@ -200,13 +218,15 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["crit"] = "cleaves"
         fighters[index]["weapon"]["self"] = "teleports behind"
         fighters[index]["weapon"]["suicide"] = "sepukus"
+        fighters[index]["weapon"]["crip"] = 4
     elif 8500 < luck <= 9300:
         fighters[index]["weapon"]["name"] = "pistol"
         fighters[index]["weapon"]["damage"] = 4
-        fighters[index]["weapon"]["hit"] = "side grips"
+        fighters[index]["weapon"]["hit"] = "fires at"
         fighters[index]["weapon"]["crit"] = "pistol whips"
         fighters[index]["weapon"]["self"] = "shoots"
         fighters[index]["weapon"]["suicide"] = "\"headshots\""
+        fighters[index]["weapon"]["crip"] = 2
     elif 9300 < luck <= 9600:
         fighters[index]["weapon"]["name"] = "shotgun"
         fighters[index]["weapon"]["damage"] = 6
@@ -214,6 +234,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["crit"] = "point blanks"
         fighters[index]["weapon"]["self"] = "recoil hits"
         fighters[index]["weapon"]["suicide"] = "Kurt Cobains"
+        fighters[index]["weapon"]["crip"] = 3
     elif 9600 < luck <= 9700:
         fighters[index]["weapon"]["name"] = "wok"
         fighters[index]["weapon"]["damage"] = 9
@@ -221,6 +242,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["crit"] = "clonks"
         fighters[index]["weapon"]["self"] = "bongs"
         fighters[index]["weapon"]["suicide"] = "bangs"
+        fighters[index]["weapon"]["crip"] = 0
     elif 9700 < luck <= 9900:
         fighters[index]["weapon"]["name"] = "assault rifle"
         fighters[index]["weapon"]["damage"] = 10
@@ -228,6 +250,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["crit"] = "full autos"
         fighters[index]["weapon"]["self"] = "fires upon"
         fighters[index]["weapon"]["suicide"] = "ends"
+        fighters[index]["weapon"]["crip"] = 4
     elif 9900 < luck <= 10000:
         fighters[index]["weapon"]["name"] = "sniper rifle"
         fighters[index]["weapon"]["damage"] = 15
@@ -235,29 +258,38 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["crit"] = "headshots"
         fighters[index]["weapon"]["self"] = "questions"
         fighters[index]["weapon"]["suicide"] = "headsplodes"
+        fighters[index]["weapon"]["crip"] = 6
     # Reroll for armor
     luck = randint(0, 10000)
     if 0 <= luck <= 5000:
         fighters[index]["armor"]["name"] = "t-shirt"
         fighters[index]["armor"]["resist"] = 0
+        #if the range is changed for destruction, this needs to be changed in the check for destroyed also
+        fighters[index]["armor"]["save"] = 100
     elif 5000 < luck <= 7500:
         fighters[index]["armor"]["name"] = "sweatshirt"
         fighters[index]["armor"]["resist"] = 1
+        fighters[index]["armor"]["save"] = 1
     elif 7500 < luck <= 8500:
         fighters[index]["armor"]["name"] = "bike helmet"
         fighters[index]["armor"]["resist"] = 2
+        fighters[index]["armor"]["save"] = 3
     elif 8500 < luck <= 9300:
         fighters[index]["armor"]["name"] = "police vest"
         fighters[index]["armor"]["resist"] = 3
+        fighters[index]["armor"]["save"] = 3
     elif 9300 < luck <= 9700:
         fighters[index]["armor"]["name"] = "kevlar"
         fighters[index]["armor"]["resist"] = 4
+        fighters[index]["armor"]["save"] = 4
     elif 9700 < luck <= 9900:
         fighters[index]["armor"]["name"] = "SWAT gear"
         fighters[index]["armor"]["resist"] = 6
+        fighters[index]["armor"]["save"] = 5
     elif 9900 < luck <= 10000:
         fighters[index]["armor"]["name"] = "wok"
         fighters[index]["armor"]["resist"] = 8
+        fighters[index]["armor"]["save"] = 10
     return fighters
 
 
@@ -317,9 +349,9 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
     # Roll to hit
     roll = randint(1, 20)
     # Damage total
-    damage = randint(1, 10) + roll + fighters[attacker]["weapon"]["damage"]
+    damage = randint(1, 10) + roll + fighters[attacker]["weapon"]["damage"] - fighters[defender]["armor"]["resist"]
     #max weapon use phrasing length
-    phrase_len = 16
+    phrase_len = 18
     #max weapon name length
     wepn_len = 13
     # Critical fail, hit self
@@ -333,7 +365,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
     if target is None:
         return ""
     # Target takes damage
-    fighters[target]["hp"] -= max(damage - fighters[defender]["armor"]["resist"], 0)
+    fighters[target]["hp"] -= max(damage, 0)
     hit = ""
     if roll is 1 and fighters[target]["hp"] < 1:
         hit = fighters[attacker]["weapon"]["suicide"]
@@ -341,15 +373,26 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
         hit = fighters[attacker]["weapon"]["self"]
     elif roll is 20:
         hit = fighters[attacker]["weapon"]["crit"]
+        if randint(0,10) + fighters[attacker]["weapon"]["crip"] > 7 + fighters[defender]["armor"]["save"]:
+            destruction = True
+            armorname = fighters[defender]["armor"]["name"]
+            fighters[defender]["armor"]["name"] = "t-shirt"
+            fighters[defender]["armor"]["resist"] = 0
+            fighters[defender]["armor"]["save"] = 100
+        else:
+            destruction = False
+            armorname = ""
     else:
         hit = fighters[attacker]["weapon"]["hit"]
     battle_report = ""
     if verbose:
         # Print the default format attack
-        battle_report += "{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(damage), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
+        battle_report += "{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(max(damage, 0)), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
         # When attacker is the last person, print special messages
         if critical:
-            if target is defender:
+            if target is defender and destruction is True:
+                battle_report += "\tCritical hit! {} destroyed {}'s {} with their {} ".format(fighters[attacker]["name"], fighters[defender]["name"], armorname, fighters[attacker]["weapon"]["name"])
+            elif target is defender and destruction is False:
                 battle_report += "\tCritical hit! "
             elif target is attacker:
                 battle_report += "\tCritical fail! "
