@@ -387,11 +387,11 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
     battle_report = ""
     if verbose:
         # Print the default format attack
-        battle_report += "{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(max(damage, 0)), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
+        battle_report += "{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}\n".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(max(damage, 0)), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
         # When attacker is the last person, print special messages
         if critical:
             if target is defender and destruction is True:
-                battle_report += "\tCritical hit! {} destroyed {}'s {} with their {}. ".format(fighters[attacker]["name"], fighters[defender]["name"], armorname, fighters[attacker]["weapon"]["name"])
+                battle_report += "\tCritical hit! {} destroyed {}'s {} with their {}.\n".format(fighters[attacker]["name"], fighters[defender]["name"], armorname, fighters[attacker]["weapon"]["name"])
             elif target is defender and destruction is False:
                 battle_report += "\tCritical hit! "
             elif target is attacker:
