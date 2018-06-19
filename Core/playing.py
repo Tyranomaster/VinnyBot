@@ -195,7 +195,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["self"] = "enucleates"
         fighters[index]["weapon"]["suicide"] = "impales"
         fighters[index]["weapon"]["crip"] = -2
-    elif 50 < luck <= 5000:
+    elif 50 < luck <= 4000:
         fighters[index]["weapon"]["name"] = "hand"
         fighters[index]["weapon"]["damage"] = 0
         fighters[index]["weapon"]["hit"] = "punches"
@@ -203,7 +203,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["self"] = "smacks"
         fighters[index]["weapon"]["suicide"] = "strangles"
         fighters[index]["weapon"]["crip"] = 0
-    elif 5000 < luck <= 7500:
+    elif 4000 < luck <= 6150:
         fighters[index]["weapon"]["name"] = "knife"
         fighters[index]["weapon"]["damage"] = 1
         fighters[index]["weapon"]["hit"] = "slashes"
@@ -211,7 +211,15 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["self"] = "cuts"
         fighters[index]["weapon"]["suicide"] = "wrist cuts"
         fighters[index]["weapon"]["crip"] = 4
-    elif 7500 < luck <= 8500:
+    elif 6150 < luck <= 7400:
+        fighters[index]["weapon"]["name"] = "baseball bat"
+        fighters[index]["weapon"]["damage"] = 3
+        fighters[index]["weapon"]["hit"] = "bashes"
+        fighters[index]["weapon"]["crit"] = "homeruns"
+        fighters[index]["weapon"]["self"] = "hits"
+        fighters[index]["weapon"]["suicide"] = "skull smashes"
+        fighters[index]["weapon"]["crip"] = 0
+    elif 7400 < luck <= 8300:
         fighters[index]["weapon"]["name"] = "katana"
         fighters[index]["weapon"]["damage"] = 2
         fighters[index]["weapon"]["hit"] = "slices"
@@ -219,7 +227,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["self"] = "teleports behind"
         fighters[index]["weapon"]["suicide"] = "sepukus"
         fighters[index]["weapon"]["crip"] = 4
-    elif 8500 < luck <= 9200:
+    elif 8300 < luck <= 9000:
         fighters[index]["weapon"]["name"] = "pistol"
         fighters[index]["weapon"]["damage"] = 4
         fighters[index]["weapon"]["hit"] = "fires at"
@@ -227,7 +235,7 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["self"] = "shoots"
         fighters[index]["weapon"]["suicide"] = "\"headshots\""
         fighters[index]["weapon"]["crip"] = 2
-    elif 9200 < luck <= 9570:
+    elif 9000 < luck <= 9350:
         fighters[index]["weapon"]["name"] = "shotgun"
         fighters[index]["weapon"]["damage"] = 6
         fighters[index]["weapon"]["hit"] = "peppers"
@@ -235,6 +243,14 @@ async def equip_combatant(fighters, index):
         fighters[index]["weapon"]["self"] = "recoil hits"
         fighters[index]["weapon"]["suicide"] = "Kurt Cobains"
         fighters[index]["weapon"]["crip"] = 3
+    elif 9350 < luck <= 9570:
+        fighters[index]["weapon"]["name"] = "smg"
+        fighters[index]["weapon"]["damage"] = 7
+        fighters[index]["weapon"]["hit"] = "3 round bursts"
+        fighters[index]["weapon"]["crit"] = "sprays"
+        fighters[index]["weapon"]["self"] = "ricochets"
+        fighters[index]["weapon"]["suicide"] = "autos"
+        fighters[index]["weapon"]["crip"] = 4
     elif 9570 < luck <= 9670:
         fighters[index]["weapon"]["name"] = "wok"
         fighters[index]["weapon"]["damage"] = 8
@@ -421,7 +437,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
     weaponloot = False
     armorloot = False
     wepn_name = fighters[attacker]["weapon"]["name"]
-    if fighters[defender]["hp"] < 1 and randint(1,15) <= fighters[defender]["weapon"]["damage"] - fighters[attacker]["weapon"]["damage"]:
+    if fighters[defender]["hp"] < 1 and randint(1,11) <= fighters[defender]["weapon"]["damage"] - fighters[attacker]["weapon"]["damage"]:
         weaponloot = True
         fighters[attacker]["weapon"]["name"] = fighters[defender]["weapon"]["name"]
         fighters[attacker]["weapon"]["damage"] = fighters[defender]["weapon"]["damage"]
@@ -430,7 +446,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
         fighters[attacker]["weapon"]["self"] = fighters[defender]["weapon"]["self"]
         fighters[attacker]["weapon"]["suicide"] = fighters[defender]["weapon"]["suicide"]
         fighters[attacker]["weapon"]["crip"] = fighters[defender]["weapon"]["crip"]
-    elif fighters[defender]["hp"] < 1 and randint(1,10) <= fighters[defender]["armor"]["resist"] - fighters[attacker]["armor"]["resist"]:
+    elif fighters[defender]["hp"] < 1 and randint(1,8) <= fighters[defender]["armor"]["resist"] - fighters[attacker]["armor"]["resist"]:
         armorloot = True
         fighters[attacker]["armor"]["name"] = fighters[defender]["armor"]["name"]
         fighters[attacker]["armor"]["resist"] = fighters[defender]["armor"]["resist"]
@@ -453,7 +469,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
             else:
                 battle_report += "!"
         else:
-            battle_report += "{} kills {} with their {}".format(fighters[attacker]["name"], fighters[defender]["name"], fighters[attacker]["weapon"]["name"])
+            battle_report += "{} kills {} with their {}".format(fighters[attacker]["name"], fighters[defender]["name"], wepn_name)
             if weaponloot is True and armorloot is True:
                 battle_report += ", and loots their {} and {}!".format(fighters[defender]["weapon"]["name"], fighters[defender]["armor"]["name"])
             elif weaponloot is True and armorloot is False:
@@ -521,10 +537,10 @@ async def enact_battle(message, fighters, verbose):
                 output += "```"
                 await message.channel.send(output)
                 output = "```\n" + line + "\n"
-                time.sleep(3)
+                time.sleep(3.5)
         output += "```"
         await message.channel.send(output)
-        time.sleep(3)
+        time.sleep(3.5)
         # In verbose mode, print all combatant's hp
         if verbose:
             output = "```\nRemaining Combatants: {}\n".format(len(fighters))
@@ -535,9 +551,9 @@ async def enact_battle(message, fighters, verbose):
                 else:
                     output += "```"
                     await message.channel.send(output)
-                    time.sleep(3)
+                    time.sleep(3.5)
                     output = "```\n{}".format(line)
             output += "```"
             await message.channel.send(output)
-            time.sleep(3)
+            time.sleep(3.5)
 
