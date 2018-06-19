@@ -386,19 +386,22 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
         hit = fighters[attacker]["weapon"]["hit"]
     battle_report = ""
     if verbose:
+        # Print the default format attack
+        battle_report += "\n{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(max(damage, 0)), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
+        # When attacker is the last person, print special messages
         # Critical texts
         if critical:
             if target is defender and destruction is True:
-                battle_report += "Critical hit! {} destroyed {}'s {} with their {}.\n".format(fighters[attacker]["name"], fighters[defender]["name"], armorname, fighters[attacker]["weapon"]["name"])
+                battle_report += "\nCritical hit! {} destroyed {}'s {} with their {}.\n".format(
+                    fighters[attacker]["name"], fighters[defender]["name"], armorname,
+                    fighters[attacker]["weapon"]["name"])
             elif target is defender and destruction is False:
-                battle_report += "Critical hit!\n"
+                battle_report += "\nCritical hit!\n"
             elif target is attacker:
-                battle_report += "Critical fail!\n"
+                battle_report += "\nCritical fail!\n"
                 if fighters[target]["hp"] > 0 and len(fighters) is 1:
-                    battle_report += "{}, seeing no more opponents before them, attempts to end it all, but fails. Not that we expected anything more from them.\n".format(fighters[attacker]["name"])
-        # Print the default format attack
-        battle_report += "{:{w}} {:{x}} {:{y}} with their {:{z}} for {:>2}".format(fighters[attacker]["name"], hit, ("themself" if attacker is target else fighters[target]["name"]), fighters[attacker]["weapon"]["name"], str(max(damage, 0)), w=name_len, x=phrase_len, y=name_len, z=wepn_len)
-        # When attacker is the last person, print special messages
+                    battle_report += "\n{}, seeing no more opponents before them, attempts to end it all, but fails. Not that we expected anything more from them.\n".format(
+                        fighters[attacker]["name"])
         if fighters[target]["hp"] < 1:
             battle_report += "\t"
 
@@ -422,7 +425,7 @@ async def enact_attack(fighters, attacker, defender, name_len, verbose):
         # Defender will attempt revenge
         fighters[defender]["revenge"] = attacker
     if len(battle_report) > 0:
-        battle_report += "\n\n"
+        battle_report += "\n"
     return battle_report
 
 
